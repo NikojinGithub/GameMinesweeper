@@ -1,0 +1,8 @@
+.minesweeper__cell{
+  border: 1px solid blue;
+  display: flex;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: black;
+}

@@ -1,0 +1,30 @@
+@import url(../vendor/normalize.css);
+
+@import url(../blocks/page/page.css);
+
+@import url(../blocks/header/header.css);
+
+
+
+
+@import url(../blocks/main/main.css);
+@import url(../blocks/minesweeper/minesweeper.css);
+@import url(../blocks/minesweeper/__instruments/minesweeper__instruments.css);
+@import url(../blocks/minesweeper/__area/minesweeper__area.css);
+@import url(../blocks/minesweeper/__button/minesweeper__button.css);
+@import url(../blocks/minesweeper/__count/minesweeper__count.css);
+@import url(../blocks/minesweeper/__timer/minesweeper__timer.css);
+@import url(../blocks/minesweeper/__cell/minesweeper__cell.css);
+
+
+.open{
+  background-color: white;
+}
+
+
+
+
+
+
+
+@import url(../blocks/footer/footer.css);
