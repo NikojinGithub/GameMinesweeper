@@ -15,11 +15,7 @@
 @import url(../blocks/minesweeper/__count/minesweeper__count.css);
 @import url(../blocks/minesweeper/__timer/minesweeper__timer.css);
 @import url(../blocks/minesweeper/__cell/minesweeper__cell.css);
-
-
-.open{
-  background-color: white;
-}
+@import url(../blocks/minesweeper/__cell/_open/minesweeper__cell_type_open.css);
 
 
 
