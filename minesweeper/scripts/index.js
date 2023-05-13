@@ -44,6 +44,9 @@ function createCells(container, array){
     const element = document.createElement('div');
     element.classList.add('minesweeper__cell');
     element.style.backgroundImage = `url(${item.link})`
+    if(typeof(item) === 'object'){
+      element.classList.add('bomb');
+    }
     container.append(element);
   })
 }
@@ -52,23 +55,80 @@ createCells(mineArea, cells);
 
 //Делегирование событий. Поле -> кнопки.
 mineArea.addEventListener('click', (evt) => {
+  openCell(evt.target);
+})
+
+//Функция открытия ячейки.
+function openCell(cell){
   //Если клик не по ячейке, а по другому месту поля -> не делать ничего.
-  if(!evt.target.classList.contains('minesweeper__cell')){
+  if(!cell.classList.contains('minesweeper__cell')){
     return;
   }
 
-  evt.target.classList.add('minesweeper__cell_type_open');
+  //Остановка рекурсии для этой части код "if(count === 0){}". Если ячейка уже открыта, останавливаемся.
+  if(cell.classList.contains('minesweeper__cell_type_open')) return;
 
-  //Проверка на наличие мины в ячейке. Тут добавлять счетчик.
-  if(!evt.target.style.backgroundImage){
-    evt.target.textContent = bombCount(evt.target);
+  //Добавляем класс открывающий ячейку.
+  cell.classList.add('minesweeper__cell_type_open');
+
+  //Записываем в переменную счетчик.
+  const count = bombCount(cell);
+
+  //Если нет мины в ячейке.
+  if(!cell.classList.contains('bomb')){
+
+    //Счетчик не равен 0 -> рядом мина -> записываем количество мин рядом в ячейку.
+    if(count !== 0){
+    cell.textContent = count;
+    }
+
+    // Если счетчик равен 0 -> мин нет:
+    // 1)Открываем ячейку без записи цифры.
+    // 2)Находим соседей и проверяем есть ли в соседних с ячейках мины: (рекурсия)
+    //    -Если нет открываем и проверям соседние ячейки тем же образом.
+    //    -Если есть мина -> записываем в ячейку число мин в соседних. (рекурсия останавливается)
+    if(count === 0){
+      cell.textContent = ' ';
+
+      //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
+      const index = Array.from(mineArea.childNodes).indexOf(cell);
+      const column = index % 10;
+      const row = Math.floor(index / 10);
+
+      //Проходим по всем соседним ячейками.
+      for(let i = -1; i <= 1; i++){
+        for(let j = -1; j <= 1; j++){
+          const neigborColumn = column + i;
+          const neigborRow = row + j;
+
+          if(neigborColumn < 0 || neigborColumn > 9 || neigborRow < 0 || neigborRow > 9) continue;
+          if(neigborColumn === column && neigborRow === row) continue;
+
+          const neigborIndex = neigborRow * 10 + neigborColumn;
+          console.log(neigborIndex);
+          const neigborCell = mineArea.childNodes[neigborIndex];
+          openCell(neigborCell);
+        }
+      }
+    }
   }
 
-})
+  //Если нажали на кнопку с миной. Открываем все ячейки. Отмечаем красным ячейки с минами.
+  if(cell.classList.contains('bomb')){
+    cell.style.backgroundColor = 'red';
+    Array.from(mineArea.childNodes).forEach(cell => {
+      if(cell.classList.contains('bomb')){
+      cell.style.backgroundImage = 'url(../images/mine.png)';
+      }
+      openCell(cell);
+    });
+  }
+}
 
 //Функция возвращает количество мин вокруг ячейки.
 function bombCount(cell){
   let count = 0;
+
   //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
   const index = Array.from(mineArea.childNodes).indexOf(cell);
   const column = index % 10;
@@ -96,11 +156,10 @@ function bombCount(cell){
 
 //Проверка есть ли в ячейке мина.
 function isBomb(cell){
-  if(cell.style.backgroundImage){
+  if(cell.classList.contains('bomb')){
     return true;
   }
 }
 
-
-
-
+//Логика открытия пустых ячеек если рядом нет мин.
+//Поведение при проигрыше.
