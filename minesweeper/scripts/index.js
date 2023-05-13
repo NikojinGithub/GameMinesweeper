@@ -43,7 +43,7 @@ function createCells(container, array){
   array.forEach(item => {
     const element = document.createElement('div');
     element.classList.add('minesweeper__cell');
-    element.style.backgroundImage = `url(${item.link})`
+    // element.style.backgroundImage = `url(${item.link})`
     if(typeof(item) === 'object'){
       element.classList.add('bomb');
     }
@@ -52,11 +52,27 @@ function createCells(container, array){
 }
 
 createCells(mineArea, cells);
-
-//Делегирование событий. Поле -> кнопки.
-mineArea.addEventListener('click', (evt) => {
-  openCell(evt.target);
+//Клик правой кнопкой.
+mineArea.addEventListener('contextmenu', (evt) => {
+  evt.preventDefault();
+  addFlag(evt.target);
 })
+
+
+
+//Клик левой кнопкой. Делегирование событий. Поле -> кнопки.
+mineArea.addEventListener('click', (evt) => {
+  if(!evt.target.classList.contains('minesweeper__cell_type_flag')){
+    openCell(evt.target);
+  }
+})
+
+//Функция вешает флаг.
+function addFlag(cell){
+  if(!cell.classList.contains('minesweeper__cell_type_open')){
+    cell.classList.toggle('minesweeper__cell_type_flag');
+  }
+}
 
 //Функция открытия ячейки.
 function openCell(cell){
@@ -118,7 +134,7 @@ function openCell(cell){
     cell.style.backgroundColor = 'red';
     Array.from(mineArea.childNodes).forEach(cell => {
       if(cell.classList.contains('bomb')){
-      cell.style.backgroundImage = 'url(../images/mine.png)';
+      cell.classList.add('minesweeper__cell_type_mine');
       }
       openCell(cell);
     });
@@ -161,5 +177,5 @@ function isBomb(cell){
   }
 }
 
-//Логика открытия пустых ячеек если рядом нет мин.
-//Поведение при проигрыше.
+//Добавлен Флаг.
+
