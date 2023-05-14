@@ -12,12 +12,19 @@
 @import url(../blocks/minesweeper/__instruments/minesweeper__instruments.css);
 @import url(../blocks/minesweeper/__area/minesweeper__area.css);
 @import url(../blocks/minesweeper/__button/minesweeper__button.css);
+@import url(../blocks/minesweeper/__button/_play/minesweeper__button_type_play.css);
+@import url(../blocks/minesweeper/__button/_lose/minesweeper__button_type_lose.css);
+@import url(../blocks/minesweeper/__button/_win/minesweeper__button_type_win.css);
+@import url(../blocks/minesweeper/__cell/_disabled/minesweeper__cell_type_disabled.css);
 @import url(../blocks/minesweeper/__count/minesweeper__count.css);
 @import url(../blocks/minesweeper/__timer/minesweeper__timer.css);
 @import url(../blocks/minesweeper/__cell/minesweeper__cell.css);
 @import url(../blocks/minesweeper/__cell/_open/minesweeper__cell_type_open.css);
 @import url(../blocks/minesweeper/__cell/_flag/minesweeper__cell_type_flag.css);
 @import url(../blocks/minesweeper/__cell/_mine/minesweeper__cell_type_mine.css);
+
+@import url(../blocks/popup/popup.css);
+@import url(../blocks/popup/_active/popup_active.css);
 
 
 

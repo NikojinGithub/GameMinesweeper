@@ -3,6 +3,8 @@
   height: 80%;
   border: 1px solid red;
   display: grid;
+  /* grid-template-columns: repeat(15, 1fr);
+  grid-template-rows: repeat(15, 1fr); */
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
 }

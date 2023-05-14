@@ -1,0 +1,6 @@
+.minesweeper__button_type_win{
+  background-image: url(../../../../images/win.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}

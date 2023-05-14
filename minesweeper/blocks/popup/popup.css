@@ -1,0 +1,14 @@
+.popup{
+  width: 50%;
+  height: 40%;
+  border: 1px solid red;
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform:translate(-50%, -50%);
+  background-color: bisque;
+  /* display: none; */
+  /* opacity: 0; */
+  transition: ease 1s;
+  pointer-events: none;
+}

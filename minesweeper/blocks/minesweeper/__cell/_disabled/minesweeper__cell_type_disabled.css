@@ -1,0 +1,3 @@
+.minesweeper__cell_type_disabled{
+  pointer-events: none;
+}

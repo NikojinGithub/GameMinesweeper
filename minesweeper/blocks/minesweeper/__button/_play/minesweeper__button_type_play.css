@@ -1,0 +1,6 @@
+.minesweeper__button_type_play{
+  background-image: url(../../../../images/play.png);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
