@@ -112,11 +112,6 @@ function startGame(level, area){
       container.append(element);
 
         addListeners(element);
-      // element.addEventListener('contextmenu', (evt) => {
-      //   evt.preventDefault();
-      //   addFlag(evt.target);
-
-      // })
     })
   }
 
@@ -132,6 +127,8 @@ function startGame(level, area){
      cell.addEventListener('click', (evt) => {
       if(!evt.target.classList.contains('minesweeper__cell_type_flag')){
         openCell(evt.target);
+        //Туту будет функция обработки клика по открытой ячейке.
+        checkAroundCell(evt.target);
       }
     })
   }
@@ -206,25 +203,27 @@ function startGame(level, area){
         cell.textContent = ' ';
 
         //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
-        const index = Array.from(mineArea.childNodes).indexOf(cell);
-        const column = index % level;
-        const row = Math.floor(index / level);
+        // const index = Array.from(mineArea.childNodes).indexOf(cell);
+        // const column = index % level;
+        // const row = Math.floor(index / level);
 
-        //Проходим по всем соседним ячейками.
-        for(let i = -1; i <= 1; i++){
-          for(let j = -1; j <= 1; j++){
-            const neigborColumn = column + i;
-            const neigborRow = row + j;
+        // //Проходим по всем соседним ячейками.
+        // for(let i = -1; i <= 1; i++){
+        //   for(let j = -1; j <= 1; j++){
+        //     const neigborColumn = column + i;
+        //     const neigborRow = row + j;
 
-            if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
-            if(neigborColumn === column && neigborRow === row) continue;
+        //     if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
+        //     if(neigborColumn === column && neigborRow === row) continue;
 
-            const neigborIndex = neigborRow * level + neigborColumn;
-            // console.log(neigborIndex);
-            const neigborCell = mineArea.childNodes[neigborIndex];
-            openCell(neigborCell);
-          }
-        }
+        //     const neigborIndex = neigborRow * level + neigborColumn;
+        //     // console.log(neigborIndex);
+        //     const neigborCell = mineArea.childNodes[neigborIndex];
+        //     openCell(neigborCell);
+                // console.log(findNeigborCell(cell, level));
+        //   }
+        // }
+        findNeigborCell(cell, level).forEach(item => openCell(item));
       }
     }
 
@@ -241,7 +240,45 @@ function startGame(level, area){
   function bombCount(cell){
     let count = 0;
 
-    //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
+    // //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
+    // const index = Array.from(mineArea.childNodes).indexOf(cell);
+    // const column = index % level;
+    // const row = Math.floor(index / level);
+
+    // //Проходим по всем соседним ячейками.
+    // for(let i = -1; i <= 1; i++){
+    //   for(let j = -1; j <= 1; j++){
+    //     const neigborColumn = column + i;
+    //     const neigborRow = row + j;
+
+    //     //Исключаем из проверки ячейки за пределами поля.
+    //     if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
+
+    //     //Находим  индекс соседней ячейки.
+    //     const neigborIndex = neigborRow * level + neigborColumn;
+    //     //Находим эту ячейку по индексу в коллекции.
+    //     const neigborCell = mineArea.childNodes[neigborIndex];
+    //     //Проверяем на наличие мины.
+    //     if(isBomb(neigborCell)) count++;
+    //   }
+    // }
+
+    findNeigborCell(cell, level).forEach(elem => {
+      if(isBomb(elem)) count++;
+    })
+
+    return count;
+
+  }
+
+  //Проверка есть ли в ячейке мина.
+  function isBomb(cell){
+    if(cell.classList.contains('bomb')){
+      return true;
+    }
+  }
+
+  function checkAroundCell(cell){
     const index = Array.from(mineArea.childNodes).indexOf(cell);
     const column = index % level;
     const row = Math.floor(index / level);
@@ -259,17 +296,44 @@ function startGame(level, area){
         const neigborIndex = neigborRow * level + neigborColumn;
         //Находим эту ячейку по индексу в коллекции.
         const neigborCell = mineArea.childNodes[neigborIndex];
-        //Проверяем на наличие мины.
-        if(isBomb(neigborCell)) count++;
-      }
-    }
-    return count;
-  }
+        // console.log(neigborCell);
 
-  //Проверка есть ли в ячейке мина.
-  function isBomb(cell){
-    if(cell.classList.contains('bomb')){
-      return true;
+        //Если в соседней ячейке есть флаг, но ячейка с флагом не является миной. Мы проиграли.
+       if(neigborCell.classList.contains('minesweeper__cell_type_flag') && !neigborCell.classList.contains('bomb')){
+        loseGame();
+       }
+
+       if(neigborCell.classList.contains('minesweeper__cell_type_flag') && neigborCell.classList.contains('bomb')){
+          const index = Array.from(mineArea.childNodes).indexOf(cell);
+          const column = index % level;
+          const row = Math.floor(index / level);
+
+          let countBombsAndFlags = 0;
+          //Проходим по всем соседним ячейками.
+          for(let i = -1; i <= 1; i++){
+            for(let j = -1; j <= 1; j++){
+              const neigborColumn = column + i;
+              const neigborRow = row + j;
+
+              if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
+              if(neigborColumn === column && neigborRow === row) continue;
+
+              const neigborIndex = neigborRow * level + neigborColumn;
+              // console.log(neigborIndex);
+              const neigborCell = mineArea.childNodes[neigborIndex];
+             if(neigborCell.classList.contains('bomb') && neigborCell.classList.contains('minesweeper__cell_type_flag')){
+              countBombsAndFlags++;
+             }
+              }
+            }
+
+          if(countBombsAndFlags === parseInt(cell.textContent)){
+            findNeigborCell(cell, level).forEach(item => openCell(item));
+
+          }
+
+        }
+      }
     }
   }
 
@@ -287,18 +351,18 @@ function startGame(level, area){
     clearInterval(playTimer);
   }
 
-  function loseGame(cell){
-    cell.style.backgroundColor = 'red';
-      popupLose.classList.add('popup_active');
-      Array.from(mineArea.childNodes).forEach(cell => {
-        if(cell.classList.contains('bomb')){
-          cell.classList.add('minesweeper__cell_type_mine');
-        }
-        openCell(cell);
-        // cell.classList.add('minesweeper__cell_type_open');
-        resetButton.classList.remove('minesweeper__button_type_play');
-        resetButton.classList.add('minesweeper__button_type_lose');
-      });
+  function loseGame(){
+    popupLose.classList.add('popup_active');
+    Array.from(mineArea.childNodes).forEach(cell => {
+      if(cell.classList.contains('bomb')){
+        cell.classList.add('minesweeper__cell_type_mine');
+        cell.style.backgroundColor = 'red';
+      }
+      openCell(cell);
+      // cell.classList.add('minesweeper__cell_type_open');
+      resetButton.classList.remove('minesweeper__button_type_play');
+      resetButton.classList.add('minesweeper__button_type_lose');
+    });
   }
 
   function checkField(){
@@ -315,6 +379,34 @@ function startGame(level, area){
   resetButton.addEventListener('click', () => {
     clearInterval(playTimer);
   })
+
+  function findNeigborCell(cell, level){
+    //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
+    const index = Array.from(mineArea.childNodes).indexOf(cell);
+    const column = index % level;
+    const row = Math.floor(index / level);
+
+    const array = [];
+    //Проходим по всем соседним ячейками.
+    for(let i = -1; i <= 1; i++){
+      for(let j = -1; j <= 1; j++){
+        const neigborColumn = column + i;
+        const neigborRow = row + j;
+
+        //Исключаем из проверки ячейки за пределами поля.
+        if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
+        if(neigborColumn === column && neigborRow === row) continue;
+
+        //Находим  индекс соседней ячейки.
+        const neigborIndex = neigborRow * level + neigborColumn;
+        //Находим эту ячейку по индексу в коллекции.
+        const neigborCell = mineArea.childNodes[neigborIndex];
+
+        array.push(neigborCell);
+      }
+    }
+    return array;
+  }
 
 }
 
@@ -343,11 +435,24 @@ startGame(easyLevel, cells);
 //Добавил цвет на цифры - работает. коммит
 //Доделать функцию перезапуска - работает. коммит
 //Дописать код победы\ поражения. выводить надпись. - работает. коммит
+//Добавлен таймер + коммит
 
-//Добавлен таймер +
+
+// Реализована логика клика открытой ячейки +;
+
+//Следующие шаги:
+//-Подсчет кликов
+//-реализация записи результатов
+//-уровни сложности
+//-Темная\светлая тема
+//-звук
+//-Безопасный первый клик
 
 
-//*************************************************** */
+
+//***************************ДОРАБОТАТЬ*********************
+//логика клика открытой ячейки - доработать код, сейчас не везде использована функция поиска ячеек соседей. 
+//findNeigborCell необходимо заменить ей все повторяющие поиски соседей.
 
 //Доработать логику победы в игре. Не открываются оставшиеся клетки. - не реализовано.
 
