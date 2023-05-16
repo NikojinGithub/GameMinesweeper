@@ -35,6 +35,11 @@ buttonPopupLose.classList.add('popup__button');
 buttonPopupWin.classList.add('popup__button');
 //
 
+//Создание таймер
+const playDuration = document.createElement('div');
+playDuration.textContent = '000';
+//
+
 
 const blocksPage = [header, main, footer];
 const blocksMain = [minesweeperBlock];
@@ -43,6 +48,7 @@ const instruments = [minesCount, resetButton, timer];
 const popups = [popupLose, popupWin];
 const popupBlocksLose = [titlePopupLose, buttonPopupLose];
 const popupBlocksWin = [titlePopupWin, buttonPopupWin];
+const clock = [playDuration];
 
 page.classList.add('page');
 header.classList.add('header');
@@ -59,7 +65,23 @@ resetButton.classList.add('minesweeper__button_type_play');
 const easyLevel = 10;
 const midLevel = 20;
 
+
 function startGame(level, area){
+
+  let seconds = 0;
+
+  function updateTimer(){
+    seconds++;
+    if(seconds < 10){
+      playDuration.textContent = `00${seconds}`;
+    } if(seconds < 100 && seconds >= 10){
+      playDuration.textContent = `0${seconds}`;
+    } if(seconds >= 100){
+      playDuration.textContent = seconds;
+    }
+  }
+
+
 
   //Вставка элементов в контейнер.
   function addBlocks(container, array){
@@ -73,6 +95,7 @@ function startGame(level, area){
   addBlocks(instrumentsArea, instruments);
   addBlocks(popupLose, popupBlocksLose);
   addBlocks(popupWin, popupBlocksWin);
+  addBlocks(timer, clock);
 
 
 
@@ -116,15 +139,19 @@ function startGame(level, area){
 
   //Функция вешает флаг.
   function addFlag(cell){
-
-    if(!cell.classList.contains('minesweeper__cell_type_open')){
-      cell.classList.toggle('minesweeper__cell_type_flag');
-    }
+    //Проверка на количество мин. Что бы нельзя было поставить лишних флагов.
+    const collection = document.querySelectorAll('.minesweeper__cell_type_flag');
+    // if(collection.length <= 9) {
+      if(!cell.classList.contains('minesweeper__cell_type_open')){
+        cell.classList.toggle('minesweeper__cell_type_flag');
+      }
+    // }
 
     //Функция проверяет ячейки и если все открыто верно вызывает функцию winGame.
     checkField();
   }
 
+  let playTimer;
   //Функция открытия ячейки.
   function openCell(cell){
    //Если клик не по ячейке, а по другому месту поля -> не делать ничего.
@@ -139,6 +166,10 @@ function startGame(level, area){
 
     //Добавляем класс открывающий ячейку.
     cell.classList.add('minesweeper__cell_type_open');
+    let openCells = document.querySelectorAll('.minesweeper__cell_type_open');
+    if(openCells.length === 1){
+    playTimer = setInterval(updateTimer, 1000);
+    }
 
     //Записываем в переменную счетчик.
     const count = bombCount(cell);
@@ -199,18 +230,12 @@ function startGame(level, area){
 
     //Если нажали на кнопку с миной. Открываем все ячейки. Показываем мины. !!!!! Дописать код конца игры !!!!!
     if(cell.classList.contains('bomb')){
-      cell.style.backgroundColor = 'red';
-      popupLose.classList.add('popup_active');
-      Array.from(mineArea.childNodes).forEach(cell => {
-        if(cell.classList.contains('bomb')){
-          cell.classList.add('minesweeper__cell_type_mine');
-        }
-        openCell(cell);
-        resetButton.classList.remove('minesweeper__button_type_play');
-        resetButton.classList.add('minesweeper__button_type_lose');
-      });
+      loseGame(cell);
+      clearInterval(playTimer);
     }
   }
+
+    
 
   //Функция возвращает количество мин вокруг ячейки.
   function bombCount(cell){
@@ -254,10 +279,26 @@ function startGame(level, area){
     popupWin.classList.add('popup_active');
     mineArea.childNodes.forEach(cell => {
       cell.classList.add('minesweeper__cell_type_disabled');
-      if(!cell.classList.contains('minesweeper__cell_type_open') || cell.classList.contains('minesweeper__cell_type_flag')){
+      // тут исправили для верного отображения мин когда прогрыш было ||
+      if(!cell.classList.contains('minesweeper__cell_type_open') && cell.classList.contains('minesweeper__cell_type_flag')){
         cell.classList.add('minesweeper__cell_type_flag');
       }
     })
+    clearInterval(playTimer);
+  }
+
+  function loseGame(cell){
+    cell.style.backgroundColor = 'red';
+      popupLose.classList.add('popup_active');
+      Array.from(mineArea.childNodes).forEach(cell => {
+        if(cell.classList.contains('bomb')){
+          cell.classList.add('minesweeper__cell_type_mine');
+        }
+        openCell(cell);
+        // cell.classList.add('minesweeper__cell_type_open');
+        resetButton.classList.remove('minesweeper__button_type_play');
+        resetButton.classList.add('minesweeper__button_type_lose');
+      });
   }
 
   function checkField(){
@@ -265,10 +306,15 @@ function startGame(level, area){
     let countOpenCells = document.querySelectorAll('.minesweeper__cell_type_open').length;
     let countBombCells = document.querySelectorAll('.minesweeper__cell_type_flag').length;
     //Если открыты все ячейки -количество бомб. Вызваем функцию победа.
-    if(countBombCells === 10 && countOpenCells === 90){
+    if(countOpenCells === 90 && countBombCells === 10){
       winGame();
     }
   }
+
+  //Остановка таймера при перезагрузке игры.
+  resetButton.addEventListener('click', () => {
+    clearInterval(playTimer);
+  })
 
 }
 
@@ -284,6 +330,7 @@ function resetGame(){
   resetButton.classList.add('minesweeper__button_type_play');
   popupLose.classList.remove('popup_active');
   popupWin.classList.remove('popup_active');
+  playDuration.textContent = '000';
 
   startGame(easyLevel, cells);
 
@@ -293,11 +340,22 @@ function resetGame(){
 startGame(easyLevel, cells);
 
 
-//Добавил цвет на цифры - работает.
-//Доделать функцию перезапуска - работает.
-//Дописать код победы\ поражения. выводить надпись. - работает.
+//Добавил цвет на цифры - работает. коммит
+//Доделать функцию перезапуска - работает. коммит
+//Дописать код победы\ поражения. выводить надпись. - работает. коммит
+
+//Добавлен таймер +
+
+
+//*************************************************** */
 
 //Доработать логику победы в игре. Не открываются оставшиеся клетки. - не реализовано.
+
+//Доработать логику. Победа засчитывается только если отмеить все мины. Проверка 303 строка.
+//Если это убрать все работаеть верно, тоесть победа засчитывается и когда открыты все ячейки кроме мин.
+//Но в этом случае Не верно работает логика поражения.
+//***************************************************/
+
 
 //Для сложности игры.
 //Проблема с увеличением размера поля заключается в строке
@@ -308,7 +366,7 @@ startGame(easyLevel, cells);
 
 
 
-
+//Уровни сложности.
 //Обернуть весь код в функцию. Вызвать ее. Для перезапуска кода. очистить страницу. и Запустить функцию старт.
 
 // resetButton.addEventListener('click', () => {
