@@ -7,9 +7,13 @@ const footer = document.createElement('footer');
 const minesweeperBlock = document.createElement('div');
 const instrumentsArea = document.createElement('div');
 const mineArea =  document.createElement('div');
-const minesCount = document.createElement('div');
+const clickBlock = document.createElement('div');
 const resetButton = document.createElement('button');
-const timer = document.createElement('div');
+const timerBlock = document.createElement('div');
+const themeBlock = document.createElement('div');
+const titleHeader = document.createElement('h1');
+const difficultBlock = document.createElement('div');
+
 
 
 //Создание всплывающего окна.
@@ -35,20 +39,36 @@ buttonPopupLose.classList.add('popup__button');
 buttonPopupWin.classList.add('popup__button');
 //
 
+//Создание счетчика кликов
+const clickCount = document.createElement('div');
+clickCount.textContent = '000';
+
+//
 //Создание таймер
 const playDuration = document.createElement('div');
 playDuration.textContent = '000';
+//
+
+//Создание кнопок сложности и переключения темы.
+const buttonEase = document.createElement('button');
+const buttonMedium = document.createElement('button');
+const buttonHard = document.createElement('button');
+const buttonTheme = document.createElement('button');
 //
 
 
 const blocksPage = [header, main, footer];
 const blocksMain = [minesweeperBlock];
 const insideBlocks= [instrumentsArea, mineArea];
-const instruments = [minesCount, resetButton, timer];
+const instruments = [clickBlock, resetButton, timerBlock];
 const popups = [popupLose, popupWin];
 const popupBlocksLose = [titlePopupLose, buttonPopupLose];
 const popupBlocksWin = [titlePopupWin, buttonPopupWin];
 const clock = [playDuration];
+const clicks = [clickCount];
+const headerElements = [themeBlock, titleHeader, difficultBlock];
+const difficultButtons = [buttonEase, buttonMedium, buttonHard];
+const themeButton = [buttonTheme];
 
 page.classList.add('page');
 header.classList.add('header');
@@ -57,10 +77,16 @@ footer.classList.add('footer');
 minesweeperBlock.classList.add('minesweeper');
 instrumentsArea.classList.add('minesweeper__instruments');
 mineArea.classList.add('minesweeper__area');
-minesCount.classList.add('minesweeper__count');
+clickBlock.classList.add('minesweeper__count');
 resetButton.classList.add('minesweeper__button');
-timer.classList.add('minesweeper__timer');
+timerBlock.classList.add('minesweeper__timer');
 resetButton.classList.add('minesweeper__button_type_play');
+titleHeader.classList.add('header__title');
+titleHeader.textContent = 'Minesweeper';
+difficultBlock.classList.add('header__buttons');
+difficultButtons.forEach(button => button.classList.add('header__button'));
+themeBlock.classList.add('header__theme');
+buttonTheme.classList.add('header__button', 'header__button_type_theme');
 
 const easyLevel = 10;
 const midLevel = 20;
@@ -69,7 +95,9 @@ const midLevel = 20;
 function startGame(level, area){
 
   let seconds = 0;
+  let clicksCount = 0;
 
+  //Функция отвечает за работу таймера. Увеличивает значение счетчика на 1.
   function updateTimer(){
     seconds++;
     if(seconds < 10){
@@ -78,6 +106,24 @@ function startGame(level, area){
       playDuration.textContent = `0${seconds}`;
     } if(seconds >= 100){
       playDuration.textContent = seconds;
+    }
+  }
+
+  //Функция отвечает за работу счетчика кликов. Если клик произведен не по ячейке с флагом,
+  //то увеличивает число кликов на 1 и записывает в счетчик.
+  function updateClick(cell){
+    const openCells = document.querySelectorAll('.minesweeper__cell_type_open');
+    if(!cell.classList.contains('minesweeper__cell_type_flag')){
+      clicksCount++;
+
+      if(clicksCount < 10){
+        clickCount.textContent = `00${clicksCount}`;
+      } if(clicksCount < 100 && clicksCount >= 10){
+        clickCount.textContent = `0${clicksCount}`;
+      } if(clicksCount >= 100){
+        clickCount.textContent = clicksCount;
+      }
+
     }
   }
 
@@ -95,7 +141,11 @@ function startGame(level, area){
   addBlocks(instrumentsArea, instruments);
   addBlocks(popupLose, popupBlocksLose);
   addBlocks(popupWin, popupBlocksWin);
-  addBlocks(timer, clock);
+  addBlocks(timerBlock, clock);
+  addBlocks(clickBlock, clicks)
+  addBlocks(header, headerElements);
+  addBlocks(difficultBlock, difficultButtons);
+  addBlocks(themeBlock, themeButton);
 
 
 
@@ -130,6 +180,8 @@ function startGame(level, area){
         //Туту будет функция обработки клика по открытой ячейке.
         checkAroundCell(evt.target);
       }
+        updateClick(evt.target);
+      
     })
   }
 
@@ -423,6 +475,7 @@ function resetGame(){
   popupLose.classList.remove('popup_active');
   popupWin.classList.remove('popup_active');
   playDuration.textContent = '000';
+  clickCount.textContent = '000';
 
   startGame(easyLevel, cells);
 
@@ -436,21 +489,26 @@ startGame(easyLevel, cells);
 //Доделать функцию перезапуска - работает. коммит
 //Дописать код победы\ поражения. выводить надпись. - работает. коммит
 //Добавлен таймер + коммит
+//Добавлен счетчик кликов +
+//Добавлены кнопки в header +
 
 
 // Реализована логика клика открытой ячейки +;
 
 //Следующие шаги:
-//-Подсчет кликов
+//-Подсчет кликов +
 //-реализация записи результатов
 //-уровни сложности
-//-Темная\светлая тема
+//-Темная\светлая тема - повесить слушатель. Класс готов кнопка готова.
 //-звук
 //-Безопасный первый клик
 
 
 
 //***************************ДОРАБОТАТЬ*********************
+//Счетчик кликов сейчас реагирует на все клики кроме флага. ВОзможно правильно будет не реагировать на
+//пустые ячейки тоже.
+
 //логика клика открытой ячейки - доработать код, сейчас не везде использована функция поиска ячеек соседей. 
 //findNeigborCell необходимо заменить ей все повторяющие поиски соседей.
 

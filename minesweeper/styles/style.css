@@ -1,8 +1,14 @@
 @import url(../vendor/normalize.css);
 
 @import url(../blocks/page/page.css);
+@import url(../blocks/page/_dark/page_type_dark.css);
 
 @import url(../blocks/header/header.css);
+@import url(../blocks/header/__title/header__title.css);
+@import url(../blocks/header/__buttons/header__buttons.css);
+@import url(../blocks/header/__button/header__button.css);
+@import url(../blocks/header/__button/_theme/header__button_type_theme.css);
+@import url(../blocks/header/__theme/header__theme.css);
 
 
 
