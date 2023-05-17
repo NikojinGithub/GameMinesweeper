@@ -13,7 +13,14 @@ const timerBlock = document.createElement('div');
 const themeBlock = document.createElement('div');
 const titleHeader = document.createElement('h1');
 const difficultBlock = document.createElement('div');
-
+const clickAudio = document.createElement('audio');
+const winAudio = document.createElement('audio');
+const loseAudio = document.createElement('audio');
+const flagAudio = document.createElement('audio');
+clickAudio.src = '../audio/click.mp3';
+winAudio.src = '../audio/win.mp3';
+loseAudio.src = '../audio/lose.wav'
+flagAudio.src = '../audio/flag.mp3'
 
 
 //Создание всплывающего окна.
@@ -54,8 +61,13 @@ const buttonEase = document.createElement('button');
 const buttonMedium = document.createElement('button');
 const buttonHard = document.createElement('button');
 const buttonTheme = document.createElement('button');
+const buttonSound = document.createElement('button');
+buttonSound.textContent = 'Sound ON';
+buttonTheme.textContent = 'Dark';
+buttonEase.textContent = 'Easy';
+buttonMedium.textContent = 'Medium';
+buttonHard.textContent = 'Hard';
 //
-
 
 const blocksPage = [header, main, footer];
 const blocksMain = [minesweeperBlock];
@@ -68,7 +80,7 @@ const clock = [playDuration];
 const clicks = [clickCount];
 const headerElements = [themeBlock, titleHeader, difficultBlock];
 const difficultButtons = [buttonEase, buttonMedium, buttonHard];
-const themeButton = [buttonTheme];
+const themeButton = [buttonSound, buttonTheme];
 
 page.classList.add('page');
 header.classList.add('header');
@@ -87,9 +99,13 @@ difficultBlock.classList.add('header__buttons');
 difficultButtons.forEach(button => button.classList.add('header__button'));
 themeBlock.classList.add('header__theme');
 buttonTheme.classList.add('header__button', 'header__button_type_theme');
+buttonSound.classList.add('header__button', 'header__button_type_sound');
+
+buttonSound.addEventListener('click', offSound);
+buttonTheme.addEventListener('click', shiftTheme);
 
 const easyLevel = 10;
-const midLevel = 20;
+const midLevel = 40;
 
 
 function startGame(level, area){
@@ -188,6 +204,7 @@ function startGame(level, area){
 
   //Функция вешает флаг.
   function addFlag(cell){
+    playSound(flagAudio);
     //Проверка на количество мин. Что бы нельзя было поставить лишних флагов.
     const collection = document.querySelectorAll('.minesweeper__cell_type_flag');
     // if(collection.length <= 9) {
@@ -203,6 +220,7 @@ function startGame(level, area){
   let playTimer;
   //Функция открытия ячейки.
   function openCell(cell){
+    playSound(clickAudio);
    //Если клик не по ячейке, а по другому месту поля -> не делать ничего.
     if(!cell.classList.contains('minesweeper__cell')){
       return;
@@ -390,6 +408,7 @@ function startGame(level, area){
   }
 
   function winGame(){
+    playSound(winAudio);
     resetButton.classList.remove('minesweeper__button_type_play');
     resetButton.classList.add('minesweeper__button_type_win');
     popupWin.classList.add('popup_active');
@@ -404,6 +423,7 @@ function startGame(level, area){
   }
 
   function loseGame(){
+    playSound(loseAudio);
     popupLose.classList.add('popup_active');
     Array.from(mineArea.childNodes).forEach(cell => {
       if(cell.classList.contains('bomb')){
@@ -462,6 +482,32 @@ function startGame(level, area){
 
 }
 
+//Функция проигрывает звуковые эффекты, если на странице нет выключен звук.
+function playSound(audio){
+  if(!page.classList.contains('page_type_mute')){
+    audio.play();
+  }
+}
+
+function offSound(){
+  page.classList.toggle('page_type_mute');
+
+  if(page.classList.contains('page_type_mute')){
+    buttonSound.textContent = 'Sound OFF'
+  } else {
+    buttonSound.textContent = 'Sound ON'
+  }
+}
+
+function shiftTheme(){
+  page.classList.toggle('page_type_dark');
+  if(!page.classList.contains('page_type_dark')){
+    buttonTheme.textContent = 'Dark';
+  } else {
+    buttonTheme.textContent = 'Light';
+  }
+}
+
 resetButton.addEventListener('click', resetGame);
 buttonPopupLose.addEventListener('click', resetGame);
 buttonPopupWin.addEventListener('click', resetGame);
@@ -489,8 +535,10 @@ startGame(easyLevel, cells);
 //Доделать функцию перезапуска - работает. коммит
 //Дописать код победы\ поражения. выводить надпись. - работает. коммит
 //Добавлен таймер + коммит
-//Добавлен счетчик кликов +
-//Добавлены кнопки в header +
+//Добавлен счетчик кликов + коммит
+//Добавлены кнопки в header + коммит
+//Темная светлая тема. +
+//Добавлены звуки + кнопка отключения звука.
 
 
 // Реализована логика клика открытой ячейки +;
@@ -498,9 +546,9 @@ startGame(easyLevel, cells);
 //Следующие шаги:
 //-Подсчет кликов +
 //-реализация записи результатов
-//-уровни сложности
-//-Темная\светлая тема - повесить слушатель. Класс готов кнопка готова.
-//-звук
+//-уровни сложности - прблема с отрисовкой мин, открытием пустых ячеек.
+//-Темная\светлая тема + Доработать стили других элементов.
+//-звук+
 //-Безопасный первый клик
 
 
@@ -517,6 +565,8 @@ startGame(easyLevel, cells);
 //Доработать логику. Победа засчитывается только если отмеить все мины. Проверка 303 строка.
 //Если это убрать все работаеть верно, тоесть победа засчитывается и когда открыты все ячейки кроме мин.
 //Но в этом случае Не верно работает логика поражения.
+
+//Подумать над размерами. Плохо на 320px.
 //***************************************************/
 
 

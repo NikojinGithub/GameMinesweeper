@@ -8,6 +8,7 @@
 @import url(../blocks/header/__buttons/header__buttons.css);
 @import url(../blocks/header/__button/header__button.css);
 @import url(../blocks/header/__button/_theme/header__button_type_theme.css);
+@import url(../blocks/header/__button/_sound/header__button_type_sound.css);
 @import url(../blocks/header/__theme/header__theme.css);
 
 
