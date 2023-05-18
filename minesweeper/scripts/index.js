@@ -69,15 +69,18 @@ buttonMedium.textContent = 'Medium';
 buttonHard.textContent = 'Hard';
 //
 
+//Создание блока с результатами
+const resultsBlock = document.createElement('div');
+const resultList = document.createElement('ol');
+//
+
 const blocksPage = [header, main, footer];
-const blocksMain = [minesweeperBlock];
+const blocksMain = [minesweeperBlock, resultsBlock];
 const insideBlocks= [instrumentsArea, mineArea];
 const instruments = [clickBlock, resetButton, timerBlock];
 const popups = [popupLose, popupWin];
 const popupBlocksLose = [titlePopupLose, buttonPopupLose];
 const popupBlocksWin = [titlePopupWin, buttonPopupWin];
-const clock = [playDuration];
-const clicks = [clickCount];
 const headerElements = [themeBlock, titleHeader, difficultBlock];
 const difficultButtons = [buttonEase, buttonMedium, buttonHard];
 const themeButton = [buttonSound, buttonTheme];
@@ -100,6 +103,8 @@ difficultButtons.forEach(button => button.classList.add('header__button'));
 themeBlock.classList.add('header__theme');
 buttonTheme.classList.add('header__button', 'header__button_type_theme');
 buttonSound.classList.add('header__button', 'header__button_type_sound');
+resultsBlock.classList.add('result');
+resultList.classList.add('result__list');
 
 buttonSound.addEventListener('click', offSound);
 buttonTheme.addEventListener('click', shiftTheme);
@@ -143,9 +148,13 @@ function startGame(level, area){
     }
   }
 
+  //Вставка  элемента в контейнер.
+  function addElement(container, element){
+    container.append(element);
+  }
 
 
-  //Вставка элементов в контейнер.
+  //Вставка массива элемнтов в контейнер.
   function addBlocks(container, array){
     array.forEach(elem => container.append(elem));
   }
@@ -157,11 +166,15 @@ function startGame(level, area){
   addBlocks(instrumentsArea, instruments);
   addBlocks(popupLose, popupBlocksLose);
   addBlocks(popupWin, popupBlocksWin);
-  addBlocks(timerBlock, clock);
-  addBlocks(clickBlock, clicks)
   addBlocks(header, headerElements);
   addBlocks(difficultBlock, difficultButtons);
   addBlocks(themeBlock, themeButton);
+  addElement(timerBlock, playDuration);
+  addElement(clickBlock, clickCount);
+  addElement(resultsBlock, resultList);
+  // addElement(resultList, createListElement());
+  
+
 
 
 
@@ -508,9 +521,43 @@ function shiftTheme(){
   }
 }
 
-resetButton.addEventListener('click', resetGame);
+
+//Функция создает элемент в таблице результатов, при нажатии на кнопка в попапе win.
+//Функция создает всего 10 элементов, если будет больше элементов она удалит последний.
+function createListElement(){
+  const resultElement = document.createElement('li');
+  resultElement.classList.add('result__element');
+  resultElement.textContent = `Clicks: ${clickCount.textContent} Time: ${playDuration.textContent}sec`;
+  const collectionResults = document.querySelectorAll('.result__element');
+  if(collectionResults.length < 10){
+    resultList.prepend(resultElement);
+  } else {
+    collectionResults[9].remove()
+    resultList.prepend(resultElement);
+  }
+  return collectionResults;
+}
+
+//Обработчики для добавления результатов в таблицу. Результат добавится как если кликнуть на кнопку попапа.
+//так и если кликнуть на смайлик рестарта после победы.
+resetButton.addEventListener('click', () => {
+  if(resetButton.classList.contains('minesweeper__button_type_win')){
+        createListElement();
+      }
+  resetGame();
+});
+
+//Обработчик кнопки на попапе Win. Создает запись и перезапускает игру.
+buttonPopupWin.addEventListener('click', () => {
+  createListElement();
+  resetGame();
+});
+
+//Перезапускает игру.
 buttonPopupLose.addEventListener('click', resetGame);
-buttonPopupWin.addEventListener('click', resetGame);
+
+//Обработчик события перезагрузки или закрытия страницы. Записывает в localStorage значения перед выходом.
+window.addEventListener('beforeunload', recordLocalStorage);
 
 function resetGame(){
   page.innerHTML = '';
@@ -531,24 +578,56 @@ function resetGame(){
 startGame(easyLevel, cells);
 
 
-//Добавил цвет на цифры - работает. коммит
-//Доделать функцию перезапуска - работает. коммит
-//Дописать код победы\ поражения. выводить надпись. - работает. коммит
-//Добавлен таймер + коммит
-//Добавлен счетчик кликов + коммит
-//Добавлены кнопки в header + коммит
-//Темная светлая тема. +
-//Добавлены звуки + кнопка отключения звука.
+//Функция записывает значения из таблицы очков в localStorage по ключами вида elem0, elem1 ...
+function recordLocalStorage(){
+  let count = 0;
+  const collection = document.querySelectorAll('.result__element');
+  console.log(collection)
+  collection.forEach(item => {
+    localStorage.setItem(`elem${count}`, item.textContent);
+    count++;
+  })
+}
 
 
-// Реализована логика клика открытой ячейки +;
+// console.log(localStorage);
+
+//Функция создает элементы таблицы очков при загрузке страницы на основании данных из localStorage.
+function getScore(){
+
+  const keys = Object.keys(localStorage);
+  keys.sort().reverse();
+  console.log(keys);
+  keys.forEach(element => {
+    const elementValue = localStorage.getItem(element);
+    const resultElement = document.createElement('li');
+    resultElement.classList.add('result__element');
+    resultElement.textContent = elementValue;
+    resultList.prepend(resultElement);
+  })
+
+}
+
+getScore();
+
+//Добавил цвет на цифры - работает. коммит.
+//Доделать функцию перезапуска - работает. коммит.
+//Дописать код победы\ поражения. выводить надпись. - работает. коммит.
+//Добавлен таймер + коммит.
+//Добавлен счетчик кликов + коммит.
+//Добавлены кнопки в header + коммит.
+//Темная светлая тема. + коммит.
+//Добавлены звуки + кнопка отключения звука.+ коммит.
+// Реализована логика клика открытой ячейки + коммит.
+//Реализована запись результатов + localStorage. +
 
 //Следующие шаги:
-//-Подсчет кликов +
+
 //-реализация записи результатов
+
 //-уровни сложности - прблема с отрисовкой мин, открытием пустых ячеек.
-//-Темная\светлая тема + Доработать стили других элементов.
-//-звук+
+
+
 //-Безопасный первый клик
 
 
@@ -567,6 +646,8 @@ startGame(easyLevel, cells);
 //Но в этом случае Не верно работает логика поражения.
 
 //Подумать над размерами. Плохо на 320px.
+
+//-Темная\светлая тема + Доработать стили других элементов.
 //***************************************************/
 
 
