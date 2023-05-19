@@ -1,4 +1,4 @@
-import { cells, mid } from "./data.js";
+import { cells, mid, empty } from "./data.js";
 
 const page = document.querySelector('body');
 const header = document.createElement('header');
@@ -17,6 +17,7 @@ const clickAudio = document.createElement('audio');
 const winAudio = document.createElement('audio');
 const loseAudio = document.createElement('audio');
 const flagAudio = document.createElement('audio');
+const titleFooter = document.createElement('h2');
 clickAudio.src = '../audio/click.mp3';
 winAudio.src = '../audio/win.mp3';
 loseAudio.src = '../audio/lose.wav'
@@ -71,6 +72,7 @@ buttonHard.textContent = 'Hard';
 
 //Создание блока с результатами
 const resultsBlock = document.createElement('div');
+const titleResult = document.createElement('h2');
 const resultList = document.createElement('ol');
 //
 
@@ -84,6 +86,7 @@ const popupBlocksWin = [titlePopupWin, buttonPopupWin];
 const headerElements = [themeBlock, titleHeader, difficultBlock];
 const difficultButtons = [buttonEase, buttonMedium, buttonHard];
 const themeButton = [buttonSound, buttonTheme];
+const resultBlocks = [titleResult, resultList];
 
 page.classList.add('page');
 header.classList.add('header');
@@ -105,6 +108,10 @@ buttonTheme.classList.add('header__button', 'header__button_type_theme');
 buttonSound.classList.add('header__button', 'header__button_type_sound');
 resultsBlock.classList.add('result');
 resultList.classList.add('result__list');
+titleFooter.classList.add('footer__title');
+titleFooter.textContent = '© 2023 Pechinkin Sergei'
+titleResult.classList.add('result__title');
+titleResult.textContent = 'Score table';
 
 buttonSound.addEventListener('click', offSound);
 buttonTheme.addEventListener('click', shiftTheme);
@@ -169,10 +176,10 @@ function startGame(level, area){
   addBlocks(header, headerElements);
   addBlocks(difficultBlock, difficultButtons);
   addBlocks(themeBlock, themeButton);
+  addBlocks(resultsBlock, resultBlocks);
   addElement(timerBlock, playDuration);
   addElement(clickBlock, clickCount);
-  addElement(resultsBlock, resultList);
-  // addElement(resultList, createListElement());
+  addElement(footer, titleFooter);
   
 
 
@@ -188,6 +195,9 @@ function startGame(level, area){
       if(typeof(item) === 'object'){
         element.classList.add('bomb');
       }
+      if(typeof(item) !== 'object'){
+        element.textContent = item;
+      }
       container.append(element);
 
         addListeners(element);
@@ -201,19 +211,37 @@ function startGame(level, area){
     cell.addEventListener('contextmenu', (evt) => {
       evt.preventDefault();
       addFlag(evt.target);
-     })
+    })
 
-     cell.addEventListener('click', (evt) => {
+    cell.addEventListener('click', (evt) => {
+      replaceBomb(evt.target);
       if(!evt.target.classList.contains('minesweeper__cell_type_flag')){
         openCell(evt.target);
-        //Туту будет функция обработки клика по открытой ячейке.
         checkAroundCell(evt.target);
       }
-        updateClick(evt.target);
-      
+      updateClick(evt.target);
     })
   }
 
+  //Функция заменяет бомбу на обычную ячейку. Если мы попали первым кликом по бомбе ->
+  //Получаем коллекцию всех ячеек, находим в ней элемент с пробелом вместо пустой строки.
+  //Добавляем этому элементу класс бомбы.
+  //Вызываем функцию для открытия ячеек без бомбы на той ячейке по который был клик.
+  function replaceBomb(cell){
+    const collectionOpenCells = document.querySelectorAll('.minesweeper__cell_type_open');
+    if(collectionOpenCells.length === 0){
+      if(cell.classList.contains('bomb')){
+        cell.classList.remove('bomb');
+        const collectionOpenCells = document.querySelectorAll('.minesweeper__cell');
+        collectionOpenCells.forEach(item => {
+          if(item.textContent === ' '){
+            item.classList.add('bomb');
+          }
+        })
+        openCell(cell);
+      }
+    }
+  }
 
   //Функция вешает флаг.
   function addFlag(cell){
@@ -316,8 +344,6 @@ function startGame(level, area){
       clearInterval(playTimer);
     }
   }
-
-    
 
   //Функция возвращает количество мин вокруг ячейки.
   function bombCount(cell){
@@ -519,6 +545,13 @@ function shiftTheme(){
   } else {
     buttonTheme.textContent = 'Light';
   }
+  document.querySelectorAll('.header__button').forEach(button => {
+    button.classList.toggle('header__button_type_night')
+  });
+  document.querySelectorAll('.result__element').forEach(element => {
+    element.classList.toggle('result__element_type_night');
+  })
+
 }
 
 
@@ -619,20 +652,21 @@ getScore();
 //Темная светлая тема. + коммит.
 //Добавлены звуки + кнопка отключения звука.+ коммит.
 // Реализована логика клика открытой ячейки + коммит.
-//Реализована запись результатов + localStorage. +
+//Реализована запись результатов + localStorage. + коммит
+//Безопасный первый клик +
+//Адаптивность +
 
 //Следующие шаги:
 
-//-реализация записи результатов
 
 //-уровни сложности - прблема с отрисовкой мин, открытием пустых ячеек.
 
 
-//-Безопасный первый клик
-
-
 
 //***************************ДОРАБОТАТЬ*********************
+//!!!Доработать стили попапов!!!
+//!!!Доработать стили цифр в ячейках.!!!
+
 //Счетчик кликов сейчас реагирует на все клики кроме флага. ВОзможно правильно будет не реагировать на
 //пустые ячейки тоже.
 
@@ -645,9 +679,9 @@ getScore();
 //Если это убрать все работаеть верно, тоесть победа засчитывается и когда открыты все ячейки кроме мин.
 //Но в этом случае Не верно работает логика поражения.
 
-//Подумать над размерами. Плохо на 320px.
+//Подумать над размерами. Плохо на 320px. +
 
-//-Темная\светлая тема + Доработать стили других элементов.
+//-Темная\светлая тема + Доработать стили других элементов. +
 //***************************************************/
 
 

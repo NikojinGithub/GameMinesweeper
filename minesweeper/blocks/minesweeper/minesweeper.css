@@ -1,5 +1,21 @@
 .minesweeper{
-  width: 40%;
+  width: 43.5%;
   height: 90%;
   border: 1px dotted blue;
+  background-color: lightgrey;
+}
+
+@media screen and (max-width: 1100px) {
+  .minesweeper{
+    font-size: 17px;
+    width: 53.5%;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .minesweeper{
+    font-size: 17px;
+    width: 58.5%;
+    margin-left: 10px;
+  }
 }

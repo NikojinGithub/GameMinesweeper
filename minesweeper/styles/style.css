@@ -10,6 +10,7 @@
 @import url(../blocks/header/__button/_theme/header__button_type_theme.css);
 @import url(../blocks/header/__button/_sound/header__button_type_sound.css);
 @import url(../blocks/header/__theme/header__theme.css);
+@import url(../blocks/header/__button/_night/header__button_type_night.css);
 
 
 
@@ -34,11 +35,10 @@
 @import url(../blocks/popup/_active/popup_active.css);
 
 @import url(../blocks/result/result.css);
-
-
-
-
-
-
+@import url(../blocks/result/__title/result__title.css);
+@import url(../blocks/result/__list/result__list.css);
+@import url(../blocks/result/__element/result__element.css);
+@import url(../blocks/result/__element/_night/result__element_type_night.css);
 
 @import url(../blocks/footer/footer.css);
+@import url(../blocks/footer/__title/footer__title.css);
