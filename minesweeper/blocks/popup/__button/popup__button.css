@@ -1,0 +1,14 @@
+.popup__button{
+  height: 30%;
+  width: 30%;
+}
+
+.popup__button:hover{
+  cursor: pointer;
+}
+
+@media screen and (max-width: 700px) {
+  .popup__button{
+    width: 60%;
+  }
+}

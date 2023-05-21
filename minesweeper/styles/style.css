@@ -33,6 +33,8 @@
 
 @import url(../blocks/popup/popup.css);
 @import url(../blocks/popup/_active/popup_active.css);
+@import url(../blocks/popup/__button/popup__button.css);
+@import url(../blocks/popup/__button/_night/popup__button_type_night.css);
 
 @import url(../blocks/result/result.css);
 @import url(../blocks/result/__title/result__title.css);

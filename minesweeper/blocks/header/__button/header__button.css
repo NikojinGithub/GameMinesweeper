@@ -7,6 +7,10 @@
   justify-content: center;
 }
 
+.header__button:hover{
+  cursor: pointer;
+}
+
 @media screen and (max-width: 480px) {
   .header__button{
     font-size: 12px;

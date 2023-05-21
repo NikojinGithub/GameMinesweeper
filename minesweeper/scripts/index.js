@@ -1,4 +1,4 @@
-import { cells, mid, empty } from "./data.js";
+import { easy, mid, empty } from "./data.js";
 
 const page = document.querySelector('body');
 const header = document.createElement('header');
@@ -32,16 +32,16 @@ popupWin.classList.add('popup');
 
 const titlePopupLose = document.createElement('h2');
 const titlePopupWin = document.createElement('h2');
-titlePopupLose.textContent = 'Вы проиграли!';
-titlePopupWin.textContent = 'Вы победили!';
+titlePopupLose.textContent = 'You lose!';
+titlePopupWin.textContent = 'You won!';
 
 titlePopupLose.classList.add('popup__title');
 titlePopupWin.classList.add('popup__title');
 
 const buttonPopupLose = document.createElement('button');
 const buttonPopupWin = document.createElement('button');
-buttonPopupLose.textContent = 'Начать сначала';
-buttonPopupWin.textContent = 'Начать сначала';
+buttonPopupLose.textContent = 'Play again';
+buttonPopupWin.textContent = 'Play again';
 
 buttonPopupLose.classList.add('popup__button');
 buttonPopupWin.classList.add('popup__button');
@@ -112,6 +112,8 @@ titleFooter.classList.add('footer__title');
 titleFooter.textContent = '© 2023 Pechinkin Sergei'
 titleResult.classList.add('result__title');
 titleResult.textContent = 'Score table';
+buttonPopupLose.classList.add('popup__button');
+buttonPopupWin.classList.add('popup__button');
 
 buttonSound.addEventListener('click', offSound);
 buttonTheme.addEventListener('click', shiftTheme);
@@ -551,7 +553,9 @@ function shiftTheme(){
   document.querySelectorAll('.result__element').forEach(element => {
     element.classList.toggle('result__element_type_night');
   })
-
+  document.querySelectorAll('.popup__button').forEach(element => {
+    element.classList.toggle('popup__button_type_night');
+  })
 }
 
 
@@ -603,12 +607,12 @@ function resetGame(){
   playDuration.textContent = '000';
   clickCount.textContent = '000';
 
-  startGame(easyLevel, cells);
+  startGame(easyLevel, easy);
 
   // startGame(midLevel, mid);
 }
 
-startGame(easyLevel, cells);
+startGame(easyLevel, easy);
 
 
 //Функция записывает значения из таблицы очков в localStorage по ключами вида elem0, elem1 ...
@@ -664,8 +668,8 @@ getScore();
 
 
 //***************************ДОРАБОТАТЬ*********************
-//!!!Доработать стили попапов!!!
-//!!!Доработать стили цифр в ячейках.!!!
+//!!!Доработать стили попапов!!!+
+//!!!Доработать стили цифр в ячейках.!!!+
 
 //Счетчик кликов сейчас реагирует на все клики кроме флага. ВОзможно правильно будет не реагировать на
 //пустые ячейки тоже.
@@ -673,15 +677,12 @@ getScore();
 //логика клика открытой ячейки - доработать код, сейчас не везде использована функция поиска ячеек соседей. 
 //findNeigborCell необходимо заменить ей все повторяющие поиски соседей.
 
-//Доработать логику победы в игре. Не открываются оставшиеся клетки. - не реализовано.
+//Доработать логику победы в игре. Не открываются оставшиеся клетки.
 
 //Доработать логику. Победа засчитывается только если отмеить все мины. Проверка 303 строка.
 //Если это убрать все работаеть верно, тоесть победа засчитывается и когда открыты все ячейки кроме мин.
 //Но в этом случае Не верно работает логика поражения.
 
-//Подумать над размерами. Плохо на 320px. +
-
-//-Темная\светлая тема + Доработать стили других элементов. +
 //***************************************************/
 
 

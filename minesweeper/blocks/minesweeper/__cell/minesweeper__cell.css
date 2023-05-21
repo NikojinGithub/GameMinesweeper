@@ -1,8 +1,18 @@
 .minesweeper__cell{
-  border: 1px solid blue;
+  border: 1px solid black;
   display: flex;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
   background-color: gray;
+  font-size: 24px;
+  font-weight: 900;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 850px) {
+  .minesweeper__cell{
+    font-size: 20px;
+  }
 }

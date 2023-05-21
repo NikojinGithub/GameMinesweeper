@@ -1,9 +1,7 @@
 .main{
   height: 70%;
   width: 100%;
-  border: 1px solid red;
   display: flex;
-  /* justify-content: center; */
   justify-content: flex-end;
   align-items: center;
   position: relative;

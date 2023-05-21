@@ -1,7 +1,7 @@
 .minesweeper{
   width: 43.5%;
   height: 90%;
-  border: 1px dotted blue;
+  border: 1px solid black;
   background-color: lightgrey;
 }
 

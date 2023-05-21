@@ -4,7 +4,15 @@
   height: 45%;
   color: rgb(200, 1, 1);
   font-size: 30px;
-  text-align: center;
   border-radius: 5px;
   background-color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 550px) {
+  .minesweeper__count{
+    font-size: 25px;
+  }
 }
