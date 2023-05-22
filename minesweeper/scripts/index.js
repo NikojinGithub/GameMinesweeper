@@ -1,4 +1,4 @@
-import { easy, mid, empty } from "./data.js";
+import { easy, mid } from "./data.js";
 
 const page = document.querySelector('body');
 const header = document.createElement('header');
@@ -162,7 +162,6 @@ function startGame(level, area){
     container.append(element);
   }
 
-
   //Вставка массива элемнтов в контейнер.
   function addBlocks(container, array){
     array.forEach(elem => container.append(elem));
@@ -182,9 +181,6 @@ function startGame(level, area){
   addElement(timerBlock, playDuration);
   addElement(clickBlock, clickCount);
   addElement(footer, titleFooter);
-  
-
-
 
 
   //Создание ячеек из массива.
@@ -314,33 +310,11 @@ function startGame(level, area){
       //    -Если есть мина -> записываем в ячейку число мин в соседних. (рекурсия останавливается)
       if(count === 0){
         cell.textContent = ' ';
-
-        //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
-        // const index = Array.from(mineArea.childNodes).indexOf(cell);
-        // const column = index % level;
-        // const row = Math.floor(index / level);
-
-        // //Проходим по всем соседним ячейками.
-        // for(let i = -1; i <= 1; i++){
-        //   for(let j = -1; j <= 1; j++){
-        //     const neigborColumn = column + i;
-        //     const neigborRow = row + j;
-
-        //     if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
-        //     if(neigborColumn === column && neigborRow === row) continue;
-
-        //     const neigborIndex = neigborRow * level + neigborColumn;
-        //     // console.log(neigborIndex);
-        //     const neigborCell = mineArea.childNodes[neigborIndex];
-        //     openCell(neigborCell);
-                // console.log(findNeigborCell(cell, level));
-        //   }
-        // }
         findNeigborCell(cell, level).forEach(item => openCell(item));
       }
     }
 
-    //Если нажали на кнопку с миной. Открываем все ячейки. Показываем мины. !!!!! Дописать код конца игры !!!!!
+    //Если нажали на кнопку с миной. Открываем все ячейки. Показываем мины.
     if(cell.classList.contains('bomb')){
       loseGame(cell);
       clearInterval(playTimer);
@@ -350,30 +324,6 @@ function startGame(level, area){
   //Функция возвращает количество мин вокруг ячейки.
   function bombCount(cell){
     let count = 0;
-
-    // //Находим индекс ячейки на которую был клик. Находим ряд и колонку.
-    // const index = Array.from(mineArea.childNodes).indexOf(cell);
-    // const column = index % level;
-    // const row = Math.floor(index / level);
-
-    // //Проходим по всем соседним ячейками.
-    // for(let i = -1; i <= 1; i++){
-    //   for(let j = -1; j <= 1; j++){
-    //     const neigborColumn = column + i;
-    //     const neigborRow = row + j;
-
-    //     //Исключаем из проверки ячейки за пределами поля.
-    //     if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
-
-    //     //Находим  индекс соседней ячейки.
-    //     const neigborIndex = neigborRow * level + neigborColumn;
-    //     //Находим эту ячейку по индексу в коллекции.
-    //     const neigborCell = mineArea.childNodes[neigborIndex];
-    //     //Проверяем на наличие мины.
-    //     if(isBomb(neigborCell)) count++;
-    //   }
-    // }
-
     findNeigborCell(cell, level).forEach(elem => {
       if(isBomb(elem)) count++;
     })
@@ -483,7 +433,7 @@ function startGame(level, area){
     let countOpenCells = document.querySelectorAll('.minesweeper__cell_type_open').length;
     let countBombCells = document.querySelectorAll('.minesweeper__cell_type_flag').length;
     //Если открыты все ячейки -количество бомб. Вызваем функцию победа.
-    if(countOpenCells === 90 && countBombCells === 10){
+    if(countOpenCells === area.length - level && countBombCells === level){
       winGame();
     }
   }
@@ -520,7 +470,6 @@ function startGame(level, area){
     }
     return array;
   }
-
 }
 
 //Функция проигрывает звуковые эффекты, если на странице нет выключен звук.
@@ -558,12 +507,14 @@ function shiftTheme(){
   })
 }
 
-
 //Функция создает элемент в таблице результатов, при нажатии на кнопка в попапе win.
 //Функция создает всего 10 элементов, если будет больше элементов она удалит последний.
 function createListElement(){
   const resultElement = document.createElement('li');
   resultElement.classList.add('result__element');
+  if(page.classList.contains('page_type_dark')){
+    resultElement.classList.add('result__element_type_night');
+  }
   resultElement.textContent = `Clicks: ${clickCount.textContent} Time: ${playDuration.textContent}sec`;
   const collectionResults = document.querySelectorAll('.result__element');
   if(collectionResults.length < 10){
@@ -613,29 +564,32 @@ function resetGame(){
 }
 
 startGame(easyLevel, easy);
+// startGame(midLevel, mid);
 
 
 //Функция записывает значения из таблицы очков в localStorage по ключами вида elem0, elem1 ...
+//Так же записывает в localStorage какие классы висят на page.
 function recordLocalStorage(){
   let count = 0;
   const collection = document.querySelectorAll('.result__element');
-  console.log(collection)
+  // console.log(collection)
   collection.forEach(item => {
     localStorage.setItem(`elem${count}`, item.textContent);
     count++;
   })
+  const pageSetting = Array.from(page.classList);
+  localStorage.setItem('pageSetting', JSON.stringify(pageSetting))
 }
 
-
-// console.log(localStorage);
 
 //Функция создает элементы таблицы очков при загрузке страницы на основании данных из localStorage.
 function getScore(){
 
   const keys = Object.keys(localStorage);
-  keys.sort().reverse();
-  console.log(keys);
-  keys.forEach(element => {
+
+  const results = keys.filter(key => key.includes('elem'));
+  results.sort().reverse();
+  results.forEach(element => {
     const elementValue = localStorage.getItem(element);
     const resultElement = document.createElement('li');
     resultElement.classList.add('result__element');
@@ -647,92 +601,73 @@ function getScore(){
 
 getScore();
 
-//Добавил цвет на цифры - работает. коммит.
-//Доделать функцию перезапуска - работает. коммит.
-//Дописать код победы\ поражения. выводить надпись. - работает. коммит.
-//Добавлен таймер + коммит.
-//Добавлен счетчик кликов + коммит.
-//Добавлены кнопки в header + коммит.
-//Темная светлая тема. + коммит.
-//Добавлены звуки + кнопка отключения звука.+ коммит.
-// Реализована логика клика открытой ячейки + коммит.
-//Реализована запись результатов + localStorage. + коммит
-//Безопасный первый клик +
-//Адаптивность +
-
-//Следующие шаги:
+//Добавление классов для page из localStorage.
+function addPageSetting(){
+  const keys = Object.keys(localStorage);
+  const setting = keys.filter(key => key.includes('pageSetting'));
+  setting.forEach(key => {
+    const settingsArr = JSON.parse(localStorage.getItem(key));
+    settingsArr.forEach(item => page.classList.add(item));
+  })
+}
 
 
-//-уровни сложности - прблема с отрисовкой мин, открытием пустых ячеек.
+//Применение стилей на основе настроек сохраненых в localStorage. При загрузке страницы.
+//Сохраняет применненые настройки страницы.
+window.addEventListener('DOMContentLoaded', () => {
+  addPageSetting();
+  if(page.classList.contains('page_type_mute')){
+    buttonSound.textContent = 'Sound OFF'
+  } else {
+    buttonSound.textContent = 'Sound ON'
+  }
 
+  if(!page.classList.contains('page_type_dark')){
+    buttonTheme.textContent = 'Dark';
 
+    document.querySelectorAll('.header__button').forEach(button => {
+      button.classList.remove('header__button_type_night')
+    });
+    document.querySelectorAll('.result__element').forEach(element => {
+      element.classList.remove('result__element_type_night');
+    })
+    document.querySelectorAll('.popup__button').forEach(element => {
+      element.classList.remove('popup__button_type_night');
+    })
+  } else {
+    buttonTheme.textContent = 'Light';
 
-//***************************ДОРАБОТАТЬ*********************
-//!!!Доработать стили попапов!!!+
-//!!!Доработать стили цифр в ячейках.!!!+
+    document.querySelectorAll('.header__button').forEach(button => {
+      button.classList.add('header__button_type_night')
+    });
+    document.querySelectorAll('.result__element').forEach(element => {
+      element.classList.add('result__element_type_night');
+    })
+    document.querySelectorAll('.popup__button').forEach(element => {
+      element.classList.add('popup__button_type_night');
+    })
+  }
+})
 
-//Счетчик кликов сейчас реагирует на все клики кроме флага. ВОзможно правильно будет не реагировать на
+//************************************ДОРАБОТАТЬ*****************************************************************
+//1)   Есть баг с победой в ситуации поражения, когда остается 1 бомба и несколько ячеек. Очень очень редко.
+//Воспроизвести специально не смог. Возможно появился после изменения строки:
+//if(countOpenCells === area.length - level && countBombCells === level){
+//      winGame();
+//    }
+//Попробовать найти причину и разобраться.
+
+//2)   Счетчик кликов сейчас реагирует на все клики кроме флага. ВОзможно правильно будет не реагировать на
 //пустые ячейки тоже.
 
-//логика клика открытой ячейки - доработать код, сейчас не везде использована функция поиска ячеек соседей. 
+//3)   логика клика открытой ячейки - доработать код, сейчас не везде использована функция поиска ячеек соседей.
 //findNeigborCell необходимо заменить ей все повторяющие поиски соседей.
 
-//Доработать логику победы в игре. Не открываются оставшиеся клетки.
+//4)   Доработать логику победы в игре. Не открываются оставшиеся клетки.
 
-//Доработать логику. Победа засчитывается только если отмеить все мины. Проверка 303 строка.
+//5)   Доработать логику. Победа засчитывается только если отмеить все мины. Проверка 303 строка.
 //Если это убрать все работаеть верно, тоесть победа засчитывается и когда открыты все ячейки кроме мин.
 //Но в этом случае Не верно работает логика поражения.
-
-//***************************************************/
-
-
-//Для сложности игры.
-//Проблема с увеличением размера поля заключается в строке
-//if(neigborColumn < 0 || neigborColumn > level-1 || neigborRow < 0 || neigborRow > level-1) continue;
-//Нужно изменять значения level типо level-11.  Возможно вынести эту часть в отдельную функцию и вызывать
-//с определенным параметром в зависимости от стиля размера поля.
-
-
-
-
-//Уровни сложности.
-//Обернуть весь код в функцию. Вызвать ее. Для перезапуска кода. очистить страницу. и Запустить функцию старт.
-
-// resetButton.addEventListener('click', () => {
-//   page.innerHTML = '';
-//   mineArea.innerHTML = '';
-//   start();
-// });
-
-
-// start(); 
-
-
-
-
-
-
-
-
-
-
-//Старые функции удалить.
-
-//Клик правой кнопкой.
-  // mineArea.addEventListener('contextmenu', (evt) => {
-  //  evt.preventDefault();
-  //  addFlag(evt.target);
-  // })
-
-  //Клик левой кнопкой. Делегирование событий. Поле -> кнопки.
-  // mineArea.addEventListener('click', (evt) => {
-  //   if(!evt.target.classList.contains('minesweeper__cell_type_flag')){
-  //     openCell(evt.target);
-  //   }
-  // })
-
-   // function removeFlag(cell){
-  //   if(cell.classList.contains('minesweeper__cell_type_flag')){
-  //     cell.classList.remove('minesweeper__cell_type_flag')
-  //   }
-  // }
+//6) Вынести в классы.
+//7) Добавить webpack.
+//***************************************************************************************************************
